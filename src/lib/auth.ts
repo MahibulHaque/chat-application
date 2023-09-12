@@ -5,31 +5,50 @@ import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { fetchRedis } from "@/helpers/redis";
 
-function getGoogleCredentials() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+class CredentialsProvider {
+  private readonly providerName: string;
+  private readonly clientIdEnvName: string;
+  private readonly clientSecretEnvName: string;
 
-  if (!clientId || clientId.length === 0) {
-    throw new Error("Missing GOOGLE_CLIENT_ID");
+  constructor(
+    providerName: string,
+    clientIdEnvName: string,
+    clientSecretEnvName: string
+  ) {
+    this.providerName = providerName;
+    this.clientIdEnvName = clientIdEnvName;
+    this.clientSecretEnvName = clientSecretEnvName;
   }
-  if (!clientSecret || clientSecret.length === 0) {
-    throw new Error("Missing GOOGLE_CLIENT_SECRET");
+
+  getProviderName(): string {
+    return this.providerName;
   }
-  return { clientId, clientSecret };
+
+  getCredentials(): { clientId: string; clientSecret: string } {
+    const clientId = process.env[this.clientIdEnvName];
+    const clientSecret = process.env[this.clientSecretEnvName];
+
+    if (!clientId || clientId.length === 0) {
+      throw new Error(`Missing ${this.providerName} client ID`);
+    }
+    if (!clientSecret || clientSecret.length === 0) {
+      throw new Error(`Missing ${this.providerName} client secret`);
+    }
+
+    return { clientId, clientSecret };
+  }
 }
 
-function getGithubCredentials() {
-  const clientId = process.env.GITHUB_CLIENT_ID;
-  const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-
-  if (!clientId || clientId.length === 0) {
-    throw new Error("Missing GITHUB_CLIENT_ID");
-  }
-  if (!clientSecret || clientSecret.length === 0) {
-    throw new Error("Missing GITHUB_CLIENT_SECRET");
-  }
-  return { clientId, clientSecret };
-}
+const googleCredentials = new CredentialsProvider(
+  "Google",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET"
+);
+const githubCredentials = new CredentialsProvider(
+  "Github",
+  "GITHUB_CLIENT_ID",
+  "GITHUB_CLIENT_SECRET"
+);
 
 export const authOptions: NextAuthOptions = {
   adapter: UpstashRedisAdapter(db),
@@ -41,12 +60,12 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     GoogleProvider({
-      clientId: getGoogleCredentials().clientId,
-      clientSecret: getGoogleCredentials().clientSecret,
+      clientId: googleCredentials.getCredentials().clientId,
+      clientSecret: googleCredentials.getCredentials().clientSecret,
     }),
     GithubProvider({
-      clientId: getGithubCredentials().clientId,
-      clientSecret: getGithubCredentials().clientSecret,
+      clientId: githubCredentials.getCredentials().clientId,
+      clientSecret: githubCredentials.getCredentials().clientSecret,
     }),
   ],
   callbacks: {
