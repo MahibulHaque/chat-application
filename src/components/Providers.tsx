@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, ReactNode } from "react";
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "sonner";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -10,8 +10,8 @@ interface ProvidersProps {
 const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
     <>
+      <Toaster richColors closeButton={true} duration={2000} />
       {children}
-      <ToastContainer position='bottom-right' className='max-w-sm' />
     </>
   );
 };

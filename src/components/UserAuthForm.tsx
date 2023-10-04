@@ -8,27 +8,74 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
+const loginFormSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email("Invalid email provided"),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(8, "Password must have more than 8 characters")
+    .regex(new RegExp(/^(?=.*\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]).*$/), {
+      message:
+        "Password must contain symbol, must have captalized letter and number",
+    }),
+});
+
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<LoginFormSchema>({
+    resolver: zodResolver(loginFormSchema),
+  });
+
+  const onSubmit: SubmitHandler<LoginFormSchema> = async (data) => {
+    setIsLoading(true);
+    try {
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+        callbackUrl: "/login",
+      });
+      if (res?.status === 401) {
+        toast.error("Invalid credentials provided");
+        reset();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   async function loginWithGoogle() {
     setIsLoading(true);
     try {
       await signIn("google");
     } catch (error) {
       // display error message to user
-      toast.error("Something went wrong with your login.", {
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-      });
+      // toast.error("Something went wrong with your login.", {
+      //   autoClose: 1000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   theme: "dark",
+      // });
     } finally {
       setIsLoading(false);
     }
@@ -39,39 +86,41 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       await signIn("github");
     } catch (error) {
       // display error message to user
-      toast.error("Something went wrong with your login.", {
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-      });
+      // toast.error("Something went wrong with your login.", {
+      //   autoClose: 1000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   theme: "dark",
+      // });
     } finally {
       setIsLoading(false);
     }
   }
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }
-
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className='grid gap-2'>
           <div className='grid gap-2'>
             <Label htmlFor='email'>Email</Label>
-            <Input id='email' type='email' placeholder='m@example.com' />
+            <Input
+              id='email'
+              type='email'
+              placeholder='m@example.com'
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className='text-xs text-red-500'>{errors.email?.message}</p>
+            )}
           </div>
           <div className='grid gap-2'>
             <Label htmlFor='password'>Password</Label>
-            <Input id='password' type='password' />
+            <Input id='password' type='password' {...register("password")} />
+            {errors.password && (
+              <p className='text-xs text-red-500'>{errors.password?.message}</p>
+            )}
           </div>
           <Button disabled={isLoading}>
             {isLoading && <ImSpinner8 className='mr-2 h-4 w-4 animate-spin' />}

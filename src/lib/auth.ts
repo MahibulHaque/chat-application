@@ -74,7 +74,6 @@ export const authOptions: NextAuthOptions = {
             "get",
             `user:email:${email}`
           )) as string;
-
           if (!userId) {
             return null;
           }
