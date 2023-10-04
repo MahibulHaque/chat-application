@@ -1,11 +1,15 @@
 import { NextAuthOptions, User } from "next-auth";
 import { UpstashRedisAdapter } from "@next-auth/upstash-redis-adapter";
 import { db } from "./database";
+import { z } from "zod";
+import bcrypt from "bcryptjs";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { fetchRedis } from "@/helpers/redis";
+import { userSignInValidator } from "./validations/userSignin";
 
-class CredentialsProvider {
+class OAuthCredentialsProvider {
   private readonly providerName: string;
   private readonly clientIdEnvName: string;
   private readonly clientSecretEnvName: string;
@@ -39,12 +43,12 @@ class CredentialsProvider {
   }
 }
 
-const googleCredentials = new CredentialsProvider(
+const googleCredentials = new OAuthCredentialsProvider(
   "Google",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET"
 );
-const githubCredentials = new CredentialsProvider(
+const githubCredentials = new OAuthCredentialsProvider(
   "Github",
   "GITHUB_CLIENT_ID",
   "GITHUB_CLIENT_SECRET"
@@ -59,6 +63,39 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {},
+
+      async authorize(credentials) {
+        try {
+          const { email, password } = userSignInValidator.parse(credentials);
+          const userId = (await fetchRedis(
+            "get",
+            `user:email:${email}`
+          )) as string;
+
+          if (!userId) {
+            return null;
+          }
+
+          const user = JSON.parse(await fetchRedis("get", `user:${userId}`));
+
+          const passwordsMatch = await bcrypt.compare(password, user.password);
+
+          if (!passwordsMatch) {
+            return null;
+          }
+
+          return user;
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            return new Response("Invalid request payload", { status: 422 });
+          }
+          console.error(error);
+        }
+      },
+    }),
     GoogleProvider({
       clientId: googleCredentials.getCredentials().clientId,
       clientSecret: googleCredentials.getCredentials().clientSecret,
