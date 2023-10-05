@@ -39,6 +39,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     reset,
   } = useForm<LoginFormSchema>({
     resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit: SubmitHandler<LoginFormSchema> = async (data) => {
@@ -76,7 +80,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className='grid gap-2'>
+        <div className='grid gap-6'>
           <div className='grid gap-2'>
             <Label htmlFor='email'>Email</Label>
             <Input
@@ -84,6 +88,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               type='email'
               placeholder='m@example.com'
               {...register("email")}
+              autoComplete='off'
             />
             {errors.email && (
               <p className='text-xs text-red-500'>{errors.email?.message}</p>
@@ -91,7 +96,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </div>
           <div className='grid gap-2'>
             <Label htmlFor='password'>Password</Label>
-            <Input id='password' type='password' {...register("password")} />
+            <Input
+              id='password'
+              type='password'
+              {...register("password")}
+              autoComplete='off'
+              autoFocus={false}
+            />
             {errors.password && (
               <p className='text-xs text-red-500'>{errors.password?.message}</p>
             )}
