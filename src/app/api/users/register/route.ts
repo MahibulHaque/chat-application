@@ -32,13 +32,12 @@ export async function POST(req: Request) {
       image: "",
       id: uniqueUserId,
     };
-    const redisPipeline = db.pipeline()
-
+    const redisPipeline = db.pipeline();
 
     redisPipeline.set(`user:email:${email}`, uniqueUserId);
     redisPipeline.set(`user:${uniqueUserId}`, JSON.stringify(userObject));
 
-    await redisPipeline.exec()
+    await redisPipeline.exec();
 
     return new Response("User registration successful", { status: 201 });
   } catch (error) {

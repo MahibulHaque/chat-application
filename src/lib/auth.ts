@@ -86,7 +86,11 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          return user;
+          if (user) {
+            return user;
+          } else {
+            return null;
+          }
         } catch (error) {
           if (error instanceof z.ZodError) {
             return new Response("Invalid request payload", { status: 422 });

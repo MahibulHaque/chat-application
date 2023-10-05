@@ -39,15 +39,14 @@ const FormField = <
   );
 };
 
-type FormItemContextValue = {
-  id: string;
-};
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-);
-
 const useFormField = () => {
+  type FormItemContextValue = {
+    id: string;
+  };
+
+  const FormItemContext = React.createContext<FormItemContextValue>(
+    {} as FormItemContextValue
+  );
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);
   const { getFieldState, formState } = useFormContext();
@@ -75,7 +74,13 @@ const FormItem = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const id = React.useId();
+  type FormItemContextValue = {
+    id: string;
+  };
 
+  const FormItemContext = React.createContext<FormItemContextValue>(
+    {} as FormItemContextValue
+  );
   return (
     <FormItemContext.Provider value={{ id }}>
       <div ref={ref} className={cn("space-y-2", className)} {...props} />

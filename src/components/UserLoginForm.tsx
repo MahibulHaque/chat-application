@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -33,7 +32,6 @@ const loginFormSchema = z.object({
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   type LoginFormSchema = z.infer<typeof loginFormSchema>;
-
   const {
     register,
     handleSubmit,
@@ -46,19 +44,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit: SubmitHandler<LoginFormSchema> = async (data) => {
     setIsLoading(true);
     try {
-      const res = await signIn("credentials", {
+      await signIn("credentials", {
         email: data.email,
         password: data.password,
-        redirect: false,
-        callbackUrl: "/login",
       });
-      if (res?.status === 401) {
-        toast.error("Invalid credentials provided");
-        reset();
-      }
     } catch (error) {
-      console.log(error);
     } finally {
+      reset();
       setIsLoading(false);
     }
   };
@@ -67,15 +59,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     try {
       await signIn("google");
     } catch (error) {
-      // display error message to user
-      // toast.error("Something went wrong with your login.", {
-      //   autoClose: 1000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   theme: "dark",
-      // });
     } finally {
       setIsLoading(false);
     }
@@ -85,15 +68,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     try {
       await signIn("github");
     } catch (error) {
-      // display error message to user
-      // toast.error("Something went wrong with your login.", {
-      //   autoClose: 1000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   theme: "dark",
-      // });
     } finally {
       setIsLoading(false);
     }
