@@ -1,8 +1,9 @@
 import FriendRequestSidebarOption from "@/components/FriendRequestSidebarOption";
 import { Icons } from "@/components/Icons";
 import SignOutButton from "@/components/SignoutButton";
+import { fetchRedis } from "@/helpers/redis";
 import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+import { User, getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -34,6 +35,8 @@ const Layout = async ({ children }: LayoutProps) => {
     notFound();
   }
 
+  const unseenRequestCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`)as User[]).length
+
   return (
     <div className='w-full flex h-screen'>
       <div className='flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray bg-background px-6'>
@@ -57,9 +60,9 @@ const Layout = async ({ children }: LayoutProps) => {
                     <li key={sidebarOption.id}>
                       <Link
                         href={sidebarOption.href}
-                        className='text-gray-700 hover:text-secondary-foreground hover:bg-secondary group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                        className='text-gray-400 hover:text-secondary-foreground hover:bg-secondary group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold'
                       >
-                        <span className='text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'>
+                        <span className='text-gray-400 border-secondary group-hover:border-secondary-foreground group-hover:secondary-foreground flex h-8 w-8 text-lg shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-secondary'>
                           {sidebarOption.Icon}
                         </span>
 
@@ -71,7 +74,7 @@ const Layout = async ({ children }: LayoutProps) => {
               </ul>
             </li>
             <li>
-              <FriendRequestSidebarOption />
+              <FriendRequestSidebarOption sessionId={session.user.id} intialUnseenRequestCount={unseenRequestCount}/>
             </li>
             <li className='-mx-6 mt-auto flex items-center overflow-x-hidden px-2 pb-2'>
               <div className='flex flex-1 items-center gap-x-4 py-3 text-sm font-semibold leading-6'>
