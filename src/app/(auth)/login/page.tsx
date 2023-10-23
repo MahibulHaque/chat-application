@@ -50,18 +50,27 @@ const LoginAuthenticationPage = () => {
               By clicking continue, you agree to our{" "}
               <Link
                 href='/terms'
-                className='underline underline-offset-4 hover:text-primary'
+                className='underline underline-offset-4 hover:text-foreground'
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
                 href='/privacy'
-                className='underline underline-offset-4 hover:text-primary'
+                className='underline underline-offset-4 hover:text-foreground'
               >
                 Privacy Policy
               </Link>
               .
+            </p>
+            <p className='px-8 text-center text text-muted-foreground mt-auto'>
+              Don't have an account?{" "}
+              <Link
+                href='/signup'
+                className='hover:text-foreground font-medium'
+              >
+                Sign Up
+              </Link>
             </p>
           </div>
         </div>

@@ -34,9 +34,14 @@ const registrationFormSchema = z
       .string()
       .min(1, "Password is required")
       .min(8, "Password must have more than 8 characters")
-      .regex(new RegExp(/^(?=.*\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]).*$/), {
-        message:
-          "Password must contain symbol, must have captalized letter and number",
+      .refine((password) => /[A-Z]/.test(password), {
+        message: "Password must contain at least one capital letter.",
+      })
+      .refine((password) => /\d/.test(password), {
+        message: "Password must contain at least one number.",
+      })
+      .refine((password) => /[^A-Za-z0-9]/.test(password), {
+        message: "Password must contain at least one symbol.",
       }),
     confirmPassword: z.string().min(1, "Password confirmation is required"),
   })
@@ -118,7 +123,11 @@ export function UserRegistrationForm({
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit(onSubmit)} className='gap-4 grid '>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className='gap-4 grid '
+        autoComplete='off'
+      >
         <div className='grid gap-2'>
           <Label htmlFor='username'>Username</Label>
           <Input
@@ -146,56 +155,37 @@ export function UserRegistrationForm({
         <div className='grid gap-4'>
           <div className='grid gap-2'>
             <Label htmlFor='password'>Password</Label>
-            <div className='flex items-center justify-between gap-2'>
-              <Input
-                id='password'
-                type={showPassword ? "text" : "password"}
-                {...register("password")}
-              />
-              {showPassword ? (
-                <AiOutlineEyeInvisible
-                  className='h-5 w-5 cursor-pointer'
-                  onClick={() => {
-                    setShowPassword((prev) => !prev);
-                  }}
-                />
-              ) : (
-                <AiOutlineEye
-                  className='h-5 w-5 cursor-pointer'
-                  onClick={() => {
-                    setShowPassword((prev) => !prev);
-                  }}
-                />
-              )}
-            </div>
+            <Input
+              id='password'
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              icon={showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
+              onIconClick={() => {
+                setShowPassword((prev) => !prev);
+              }}
+            />
             {errors.password && (
               <p className='text-xs text-red-500'>{errors.password?.message}</p>
             )}
           </div>
           <div className='grid gap-2'>
             <Label htmlFor='password'>Re-type Password</Label>
-            <div className='flex items-center justify-between gap-2'>
-              <Input
-                id='confirmPassword'
-                type={showConfirmedPassword ? "text" : "password"}
-                {...register("confirmPassword")}
-              />
-              {showConfirmedPassword ? (
-                <AiOutlineEyeInvisible
-                  className='h-5 w-5 cursor-pointer'
-                  onClick={() => {
-                    setShowConfirmedPassword((prev) => !prev);
-                  }}
-                />
-              ) : (
-                <AiOutlineEye
-                  className='h-5 w-5 cursor-pointer'
-                  onClick={() => {
-                    setShowConfirmedPassword((prev) => !prev);
-                  }}
-                />
-              )}
-            </div>
+            <Input
+              id='confirmPassword'
+              type={showConfirmedPassword ? "text" : "password"}
+              {...register("confirmPassword")}
+              icon={
+                showConfirmedPassword ? (
+                  <AiOutlineEye />
+                ) : (
+                  <AiOutlineEyeInvisible />
+                )
+              }
+              onIconClick={() => {
+                setShowConfirmedPassword((prev) => !prev);
+              }}
+            />
+
             {errors.confirmPassword && (
               <p className='text-xs text-red-500'>
                 {errors.confirmPassword.message}

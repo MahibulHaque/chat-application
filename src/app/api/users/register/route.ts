@@ -2,6 +2,7 @@ import { fetchRedis } from "@/helpers/redis";
 import { userRegistrationValidator } from "@/lib/validations/userRegistration";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
+import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/database";
 
@@ -23,13 +24,13 @@ export async function POST(req: Request) {
 
     const uniqueUserId = uuidv4();
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    const userAvatar = faker.image.avatar();
     const userObject = {
       name: username,
       email: email,
       password: hashedPassword,
       emailVerified: null,
-      image: "",
+      image: userAvatar,
       id: uniqueUserId,
     };
     const redisPipeline = db.pipeline();

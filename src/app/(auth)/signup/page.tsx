@@ -61,6 +61,12 @@ const UserRegistrationPage = () => {
             </Link>
             .
           </p>
+          <p className='px-8 text-center text text-muted-foreground mt-auto'>
+            Have an account?{" "}
+            <Link href='/login' className='hover:text-foreground font-medium'>
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>

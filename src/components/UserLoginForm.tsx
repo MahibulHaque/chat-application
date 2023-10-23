@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -30,6 +32,8 @@ const loginFormSchema = z.object({
 });
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   type LoginFormSchema = z.infer<typeof loginFormSchema>;
   const {
@@ -48,10 +52,18 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const onSubmit: SubmitHandler<LoginFormSchema> = async (data) => {
     setIsLoading(true);
     try {
-      await signIn("credentials", {
+      const response = await signIn("credentials", {
         email: data.email,
         password: data.password,
+        redirect: false,
       });
+
+      if (response?.error) {
+        toast.error("Invalid Credential Provided");
+      }
+      if (!response?.error) {
+        router.push("/dashboard");
+      }
     } catch (error) {
     } finally {
       reset();
