@@ -11,7 +11,7 @@ export interface InputProps
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, icon, onIconClick, ...props }, ref) => {
     return (
-      <div className="relative">
+      <div className='relative'>
         <input
           type={type}
           className={cn(
@@ -22,8 +22,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {icon && (
-          <div className="absolute top-0 right-0 h-full flex items-center pr-2">
-            <div onClick={onIconClick} className="cursor-pointer">
+          <div className='absolute top-0 right-0 h-full flex items-center pr-2'>
+            <div onClick={onIconClick} className='cursor-pointer'>
               {icon}
             </div>
           </div>

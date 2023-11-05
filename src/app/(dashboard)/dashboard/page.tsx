@@ -1,10 +1,7 @@
 import React, { FC } from "react";
 
 const DashboardPage: FC = async () => {
-  return (
-    <div>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default DashboardPage;
