@@ -1,5 +1,4 @@
-import { LucideProps, UserPlus } from "lucide-react";
-import { AiOutlineUserAdd } from "react-icons/ai";
+import { LucideProps } from "lucide-react";
 
 export const Icons = {
   Logo: (props: LucideProps) => (

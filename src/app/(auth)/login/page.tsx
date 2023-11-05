@@ -64,7 +64,7 @@ const LoginAuthenticationPage = () => {
               .
             </p>
             <p className='px-8 text-center text text-muted-foreground mt-auto'>
-              Don't have an account?{" "}
+              Don<span>&#39</span>t have an account?{" "}
               <Link
                 href='/signup'
                 className='hover:text-foreground font-medium'

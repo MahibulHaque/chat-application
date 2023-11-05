@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Router from "next/router";
 import NProgress from "nprogress";
 
@@ -47,6 +47,6 @@ window.fetch = async (...args: Parameters<typeof originalFetch>) => {
   }
 };
 
-export default function () {
+export default function Progressbar() {
   return null;
 }
