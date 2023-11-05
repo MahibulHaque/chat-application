@@ -1,21 +1,21 @@
 "use client";
-
-import dynamic from "next/dynamic";
 import { FC, ReactNode } from "react";
 import { Toaster } from "sonner";
+import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
-const PageProgressbar = dynamic(() => import("../lib/progressbar"), {
-  ssr: false,
-});
-
 const Providers: FC<ProvidersProps> = ({ children }) => {
   return (
     <>
-      <PageProgressbar />
+      <ProgressBar
+        height='3px'
+        color='#7C3AED'
+        options={{ showSpinner: true }}
+        shallowRouting
+      />
       <Toaster richColors closeButton={true} duration={2000} />
       {children}
     </>
