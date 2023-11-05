@@ -1,10 +1,9 @@
 import AddFriendButton from "@/components/AddFriendButton";
-import React, { FC } from "react";
 
-const page: FC = () => {
+const page = () => {
   return (
-    <main className='pt-8 mx-6'>
-      <h1 className='font-bold text-5xl mb-8'> Add a friend</h1>
+    <main className='pt-8 mt-8 md:mt-0'>
+      <h1 className='font-bold text-3xl mb-8 md:text-5xl'> Add a friend</h1>
       <AddFriendButton />
     </main>
   );

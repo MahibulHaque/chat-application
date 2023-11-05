@@ -52,7 +52,7 @@ const FriendRequestSidebarOption: FC<FriendRequestSidebarOptionsProps> = ({
       className='text-gray-400 hover:text-accent-foreground hover:bg-secondary group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
     >
       <div className='text-gray-400 border-secondary group-hover:border-secondary-foreground group-hover:text-accent-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-secondary'>
-        <AiOutlineUser className='h-5 w-5' />
+        <AiOutlineUser className='h-4 w-4' />
       </div>
       <p className='truncate'>Friend requests</p>
 

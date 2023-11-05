@@ -1,33 +1,28 @@
 import FriendRequestSidebarOption from "@/components/FriendRequestSidebarOption";
 import { Icons } from "@/components/Icons";
+import MobileChatLayout from "@/components/MobileChatLayout";
 import SidebarChatList from "@/components/SidebarChatList";
 import SignOutButton from "@/components/SignoutButton";
 import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
 import { fetchRedis } from "@/helpers/redis";
 import { authOptions } from "@/lib/auth";
+import { SidebarOption } from "@/types/typings";
 import { User, getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
-import { AiOutlineUserAdd } from "react-icons/ai";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
-interface SidebarOption {
-  id: number;
-  name: string;
-  href: string;
-  Icon: React.ReactNode;
-}
 const sidebarOptions: SidebarOption[] = [
   {
     id: 1,
     name: "Add friend",
     href: "/dashboard/add",
-    Icon: <AiOutlineUserAdd />,
+    Icon: "UserPlus",
   },
 ];
 
@@ -46,7 +41,15 @@ const Layout = async ({ children }: LayoutProps) => {
 
   return (
     <div className='w-full flex h-screen'>
-      <div className='flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray bg-background px-6'>
+      <div className='md:hidden'>
+        <MobileChatLayout
+          friends={friends}
+          session={session}
+          sidebarOptions={sidebarOptions}
+          unseenRequestCount={unseenRequestCount}
+        />
+      </div>
+      <div className='hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray bg-background px-6'>
         <Link href='/dashboard' className='flex h-16 shrink-0 items-center'>
           <Icons.Logo className='h-8 w-auto text-accent-foreground' />
         </Link>
@@ -66,18 +69,19 @@ const Layout = async ({ children }: LayoutProps) => {
                 Overview
               </div>
               <ul role='list' className='-mx-2 mt-2 space-y-1'>
-                {sidebarOptions.map((sidebarOption) => {
+                {sidebarOptions.map((option) => {
+                  const Icon = Icons[option.Icon];
                   return (
-                    <li key={sidebarOption.id}>
+                    <li key={option.id}>
                       <Link
-                        href={sidebarOption.href}
-                        className='text-gray-400 hover:text-secondary-foreground hover:bg-secondary group flex items-center gap-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                        href={option.href}
+                        className='text-gray-400 hover:text-accent-foreground hover:bg-secondary group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                       >
-                        <span className='text-gray-400 border-secondary group-hover:border-secondary-foreground group-hover:secondary-foreground flex h-8 w-8 text-lg shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-secondary'>
-                          {sidebarOption.Icon}
+                        <span className='text-gray-400 border-secondary group-hover:border-secondary-foreground group-hover:text-accent-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-secondary'>
+                          <Icon className='h-4 w-4' />
                         </span>
 
-                        <span className='truncate'>{sidebarOption.name}</span>
+                        <span className='truncate'>{option.name}</span>
                       </Link>
                     </li>
                   );
